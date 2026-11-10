@@ -54,6 +54,10 @@ Responda em português, organizado assim:
       });
 
       const data = await res.json();
+      if (res.status === 401) {
+        setAnalysis(data?.error || "Faça login para usar a recomendação por IA.");
+        return;
+      }
       setAnalysis(data.choices?.[0]?.message?.content || "Erro ao analisar. Tente novamente.");
     } catch {
       setAnalysis("Erro ao conectar com a IA. Tente novamente.");

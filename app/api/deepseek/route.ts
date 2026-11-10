@@ -1,6 +1,16 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json(
+      { error: "Faça login para usar a recomendação por IA.", loginRequired: true },
+      { status: 401 }
+    );
+  }
+
   try {
     const { messages } = await request.json();
     const apiKey = process.env.DEEPSEEK_API_KEY;

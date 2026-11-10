@@ -98,7 +98,6 @@ export function LandingResultsSection({
   const providerLabels: Record<string, string> = {
     googleFlights: 'Google Flights',
     travelpayouts: 'Travelpayouts',
-    amadeus: 'Amadeus',
     airScraper: 'Air Scraper',
   };
 

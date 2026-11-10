@@ -4,9 +4,6 @@
 import { SearchParams, Flight } from "@/lib/types";
 import { getTravelpayoutsLink } from "@/lib/travelpayouts";
 
-const AMADEUS_BASE_URL = "https://test.api.amadeus.com";
-const AMADEUS_API_KEY = process.env.AMADEUS_API_KEY;
-const AMADEUS_API_SECRET = process.env.AMADEUS_API_SECRET;
 const SERPAPI_KEY = process.env.SERPAPI_KEY;
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 
@@ -19,35 +16,6 @@ export async function getSkyscannerProviderStatus() {
     temporarilyDisabled: remainingMs > 0,
     retryInSeconds: Math.ceil(remainingMs / 1000),
   };
-}
-
-// Debug: Log environment variables (apenas primeiros/últimos caracteres por segurança)
-// Token Amadeus
-let amadeusToken: string | null = null;
-let tokenExpiresAt = 0;
-
-async function getAmadeusToken(): Promise<string> {
-  if (amadeusToken && Date.now() < tokenExpiresAt) return amadeusToken;
-
-  const response = await fetch(
-    "https://test.api.amadeus.com/v1/security/oauth2/token",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "client_credentials",
-        client_id: AMADEUS_API_KEY!,
-        client_secret: AMADEUS_API_SECRET!,
-      }),
-    },
-  );
-
-  if (!response.ok) throw new Error("Falha na autenticação Amadeus");
-
-  const data = await response.json();
-  amadeusToken = data.access_token;
-  tokenExpiresAt = Date.now() + (data.expires_in - 60) * 1000;
-  return amadeusToken!;
 }
 
 // ============ SERP API (Google Flights) ============
@@ -170,115 +138,6 @@ export async function searchWithSerpAPI(
     }
   } catch (error) {
     console.error("[SerpAPI] Error:", error);
-  }
-
-  return [];
-}
-
-// ============ AMADEUS API ============
-export async function searchWithAmadeus(
-  params: SearchParams,
-): Promise<Flight[]> {
-  console.log("[Amadeus] Starting search...");
-  
-  if (!AMADEUS_API_KEY || !AMADEUS_API_SECRET) {
-    console.log("[Amadeus] No API credentials found");
-    return [];
-  }
-
-  try {
-    const token = await getAmadeusToken();
-
-    const query = new URLSearchParams({
-      originLocationCode: params.origin,
-      destinationLocationCode: params.destination,
-      departureDate: params.departureDate,
-      adults: params.passengers.toString(),
-      currencyCode: "BRL",
-      max: "50",
-    });
-
-    if (params.returnDate) {
-      query.append("returnDate", params.returnDate);
-    }
-
-    const res = await fetch(
-      `${AMADEUS_BASE_URL}/v2/shopping/flight-offers?${query}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: AbortSignal.timeout(10000),
-      },
-    );
-
-    console.log(`[Amadeus] Response status: ${res.status}`);
-    
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.log(`[Amadeus] Error response:`, errorData);
-      return [];
-    }
-    
-    if (res.ok) {
-      const data = await res.json();
-      console.log(`[Amadeus] Response data:`, {
-        data_length: data.data?.length || 0,
-        errors: data.errors,
-        warnings: data.warnings
-      });
-      console.log(`[Amadeus] Found ${data.data?.length || 0} flights`);
-
-      // Gerar link de afiliado uma vez
-      const affiliateUrl = await getTravelpayoutsLink(params);
-
-      return (data.data || []).map((offer: any, idx: number) => {
-        // Tentar múltiplos formatos de preço
-        let priceValue = 0;
-        
-        if (offer.price) {
-          priceValue = parseFloat(
-            offer.price.total || 
-            offer.price.grandTotal || 
-            offer.price.base ||
-            offer.price.amount ||
-            offer.price.value ||
-            0
-          );
-        }
-        
-        // Se ainda for 0, tentar campos diretos
-        if (priceValue === 0) {
-          priceValue = parseFloat(offer.amount || offer.value || offer.total || 0);
-        }
-        
-        // DEBUG: Log primeiro voo
-        if (idx === 0) {
-          console.log('[Amadeus] Sample price data:', {
-            price_object: offer.price,
-            calculated: priceValue,
-            raw_fields: { amount: offer.amount, value: offer.value, total: offer.total }
-          });
-        }
-        
-        return {
-          id: `amadeus-${idx}-${priceValue}`,
-          price: {
-            total: priceValue > 0 ? priceValue.toFixed(2) : "Consultar",
-            currency: "BRL",
-            grandTotal: priceValue > 0 ? (priceValue * params.passengers).toFixed(2) : "Consultar",
-          },
-          itineraries: offer.itineraries || [],
-          oneWay: !params.returnDate,
-          airline: offer.validatingAirlineCodes?.[0] || "UNKNOWN",
-          airlineLogo: "",
-          flightNumber: "",
-          amenities: [],
-          stops: 0,
-          purchaseUrl: affiliateUrl, // Link de afiliado com cashback!
-        };
-      });
-    }
-  } catch (error) {
-    console.error("[Amadeus] Error:", error);
   }
 
   return [];
