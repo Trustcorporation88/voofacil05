@@ -34,7 +34,7 @@
         \"relation\": [\"delegate_permission/common.handle_all_urls\"],
         \"target\": {
             \"namespace\": \"web\",
-            \"site\": \"https://www.vooscortex.com.br\"
+            \"site\": \"https://www.voofacil.online\"
         }
     }]
     
