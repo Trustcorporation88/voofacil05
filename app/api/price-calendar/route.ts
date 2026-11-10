@@ -1,21 +1,17 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getPriceMonthMatrix } from "@/lib/travelpayouts";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 export async function POST(request: NextRequest) {
-  // LOGIN_REQUIRED_COTACAO_POST
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.email) {
+  // Aberto, como a busca: o calendario usa dados em cache do Travelpayouts.
+  // Exigir login aqui fazia o aviso "Login obrigatorio" aparecer em toda busca.
+  const limit = checkRateLimit(`calendar:${getClientIp(request)}`, 60, 10 * 60 * 1000);
+  if (!limit.allowed) {
     return NextResponse.json(
-      {
-        error: "Faça login para fazer uma cotação.",
-        loginRequired: true,
-      },
-      { status: 401 }
+      { error: "Muitas consultas em pouco tempo. Aguarde alguns minutos." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
     );
   }
 
