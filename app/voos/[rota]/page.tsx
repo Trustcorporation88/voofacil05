@@ -8,7 +8,7 @@ interface Props {
   params: { rota: string };
 }
 
-const baseUrl = "https://www.vooscortex.com.br";
+const baseUrl = "https://www.voofacil.online";
 
 export async function generateStaticParams() {
   return POPULAR_ROUTES.map((route) => ({
@@ -21,12 +21,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!route) {
     return {
-      title: "Rota não encontrada | Voos Cortex",
+      title: "Rota não encontrada | Voofacil",
       robots: { index: false, follow: false },
     };
   }
 
-  const title = `Passagens de ${route.originCity} para ${route.destinationCity} | Voos Cortex`;
+  const title = `Passagens de ${route.originCity} para ${route.destinationCity} | Voofacil`;
   const description = `Compare opções de voos de ${route.originCity} (${route.origin}) para ${route.destinationCity} (${route.destination}), acompanhe preços e encontre alternativas para sua próxima viagem.`;
 
   return {
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: `${baseUrl}/voos/${params.rota}`,
-      siteName: "Voos Cortex",
+      siteName: "Voofacil",
       locale: "pt_BR",
       type: "website",
     },
@@ -58,7 +58,7 @@ export default function RotaPage({ params }: Props) {
     url: `${baseUrl}/voos/${params.rota}`,
     publisher: {
       "@type": "Organization",
-      name: "Voos Cortex",
+      name: "Voofacil",
       url: baseUrl,
     },
     about: {

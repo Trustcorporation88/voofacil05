@@ -6,7 +6,7 @@ export function PriceCurrencyNotice() {
       <div className="flex items-start gap-3">
         <Info className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
         <p className="leading-relaxed">
-          Os preços exibidos no Voos Cortex estão em reais <strong>(BRL)</strong>.
+          Os preços exibidos no Voofacil estão em reais <strong>(BRL)</strong>.
           A compra é concluída no site da companhia aérea ou de um parceiro.
           Confira lá o valor final e a moeda antes de pagar.
         </p>

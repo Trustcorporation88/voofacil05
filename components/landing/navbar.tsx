@@ -70,14 +70,14 @@ export function LandingNavbar({
   return (
     <header className="fixed top-0 w-full z-50 glass-nav border-b border-brand-gray-300/30">
       <nav className="flex justify-between items-center px-4 sm:px-6 py-3 max-w-7xl mx-auto">
-        <a href="#" className="flex items-center" aria-label="Voos Cortex">
+        <a href="/" className="flex items-center" aria-label="Voofacil, página inicial">
           <Image
-            src="/voos-cortex-logo-v2.png"
-            alt="Voos Cortex"
-            width={260}
-            height={86}
+            src="/logo-voofacil.png"
+            alt="Voofacil"
+            width={704}
+            height={192}
             priority
-            className="object-contain h-11 sm:h-14 md:h-16 w-auto"
+            className="object-contain h-10 sm:h-11 md:h-12 w-auto"
           />
         </a>
 
