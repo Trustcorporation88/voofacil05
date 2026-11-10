@@ -161,10 +161,15 @@ export async function searchWithIgnav(params: SearchParams): Promise<Flight[]> {
   };
   if (params.returnDate) body.return_date = params.returnDate;
 
-  const { status, data } = await ignavPost<{ itineraries?: IgnavItinerary[]; error?: { code?: string } }>(
-    params.returnDate ? "/fares/round-trip" : "/fares/one-way",
-    body,
-  );
+  // 424 e 503 sao falhas temporarias do lado da Ignav e nao sao cobradas:
+  // no teste de 20 rotas, todas as que falharam responderam na tentativa seguinte.
+  type SearchBody = { itineraries?: IgnavItinerary[]; error?: { code?: string } };
+  const path = params.returnDate ? "/fares/round-trip" : "/fares/one-way";
+  let { status, data } = await ignavPost<SearchBody>(path, body);
+  for (let attempt = 0; attempt < 2 && (status === 424 || status === 503); attempt++) {
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    ({ status, data } = await ignavPost<SearchBody>(path, body));
+  }
 
   if (status !== 200 || !data) {
     console.log(`[Ignav] Search failed: ${status} ${data?.error?.code || ""}`);
