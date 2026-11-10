@@ -97,6 +97,7 @@ export function LandingResultsSection({
   const lowestPrice = Math.min(...flights.map((f) => parseFloat(f.price.total) || Infinity));
 
   const providerLabels: Record<string, string> = {
+    ignav: 'Ignav (preço ao vivo)',
     googleFlights: 'Google Flights',
     travelpayouts: 'Travelpayouts',
     airScraper: 'Air Scraper',
