@@ -15,7 +15,7 @@ function getFingerprints() {
 }
 
 export async function GET() {
-  const packageName = process.env.ANDROID_PACKAGE_NAME ?? "br.com.vooscortex.app";
+  const packageName = process.env.ANDROID_PACKAGE_NAME ?? "online.voofacil.app";
 
   const payload = [
     {
