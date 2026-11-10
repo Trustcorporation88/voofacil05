@@ -3,7 +3,6 @@
 // Documentacao: https://ignav.com/docs
 
 import type { Flight, SearchParams, Itinerary } from "@/lib/types";
-import { getTravelpayoutsLink } from "@/lib/travelpayouts";
 
 const IGNAV_BASE_URL = "https://ignav.com/api";
 const MARKET = "BR"; // precos em BRL
@@ -111,7 +110,6 @@ export function mapIgnavItinerary(
   it: IgnavItinerary,
   params: SearchParams,
   idx: number,
-  compareUrl?: string,
 ): Flight | null {
   const amount = Number(it.price?.amount);
   if (!Number.isFinite(amount) || amount <= 0) return null;
@@ -140,7 +138,6 @@ export function mapIgnavItinerary(
     amenities: [],
     stops: it.outbound.segments.length - 1,
     purchaseUrl: buildBookingRedirect(it.ignav_id, params),
-    compareUrl,
   };
 }
 
@@ -179,9 +176,8 @@ export async function searchWithIgnav(params: SearchParams): Promise<Flight[]> {
     throw new Error(`Ignav ${status} ${data?.error?.code || ""}`.trim());
   }
 
-  const compareUrl = await getTravelpayoutsLink(params);
   const flights = (data.itineraries || [])
-    .map((it, idx) => mapIgnavItinerary(it, params, idx, compareUrl))
+    .map((it, idx) => mapIgnavItinerary(it, params, idx))
     .filter((f): f is Flight => f !== null)
     .sort((a, b) => parseFloat(a.price.total) - parseFloat(b.price.total))
     .slice(0, MAX_RESULTS);

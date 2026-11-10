@@ -4,17 +4,7 @@ import { useEffect, useState } from 'react';
 import { Calculator, ChevronDown } from 'lucide-react';
 import { compareMilesVsCash } from '@/lib/miles';
 
-const PROGRAMS = [
-  'Smiles',
-  'LATAM Pass',
-  'Azul Fidelidade',
-  'Livelo',
-  'TAP Miles&Go',
-  'ConnectMiles',
-  'AAdvantage',
-  'Avios',
-  'Outro',
-];
+const PROGRAMS = ['Smiles', 'LATAM Pass', 'Azul Fidelidade', 'Livelo', 'Outro'];
 
 const brl = (n: number) =>
   n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
