@@ -116,7 +116,7 @@ export async function searchWithSerpAPI(
         };
         const dep = fmt(params.departureDate);
         const ret = params.returnDate ? fmt(params.returnDate) : '';
-        const url = `https://www.aviasales.com/search/${params.origin}${dep}${params.destination}${ret}${params.passengers || 1}?marker=${process.env.TRAVELPAYOUTS_MARKER || '720173'}`;
+        const url = `https://www.aviasales.com/search/${params.origin}${dep}${params.destination}${ret}${params.passengers || 1}?marker=${process.env.TRAVELPAYOUTS_MARKER || '716705'}`;
 
         return {
           id: `serp-${idx}-${priceValue}`,
