@@ -57,6 +57,8 @@ const buildProviderMap = (runs: ProviderRun[]): Record<string, ProviderHealth> =
   }, {});
 };
 
+// Resultados dos provedores de reserva (precos em cache ou raspados): remove
+// duplicados e descarta valores muito acima do menor preco.
 const dedupeAndFilterFlights = (flights: Flight[]) => {
   const unique = flights.filter((f, i, arr) =>
     arr.findIndex((x) => x.purchaseUrl === f.purchaseUrl && x.price.total === f.price.total) === i,
@@ -65,11 +67,7 @@ const dedupeAndFilterFlights = (flights: Flight[]) => {
     return airline !== 'AV' && airline !== 'AVIANCA' && !airline.includes('AVIANCA');
   });
 
-  // Quando ha precos ao vivo (Ignav), eles ancoram o filtro: um preco antigo
-  // de cache de outro provedor nao pode esconder os voos reais.
-  const live = unique.filter((f) => f.id.startsWith('ignav-'));
-  const anchor = live.length > 0 ? live : unique;
-  const prices = anchor.map((f) => parseFloat(f.price.total) || Infinity);
+  const prices = unique.map((f) => parseFloat(f.price.total) || Infinity);
   const minPrice = Math.min(...prices);
   const realistic = unique.filter((f) => {
     const p = parseFloat(f.price.total) || Infinity;
@@ -91,13 +89,14 @@ const buildWarnings = (providers: Record<string, ProviderHealth>, flightsCount: 
 };
 
 const MAX_RESULTS = 20;
+const MAX_LIVE_RESULTS = 40;
 
 // Ordenacao deterministica: menor preco primeiro, menos escalas como desempate.
-const rankFlights = (flights: Flight[]): Flight[] => {
+const rankFlights = (flights: Flight[], max = MAX_RESULTS): Flight[] => {
   const price = (f: Flight) => parseFloat(f.price.total) || Infinity;
   return [...flights]
     .sort((a, b) => price(a) - price(b) || (a.stops || 0) - (b.stops || 0))
-    .slice(0, MAX_RESULTS);
+    .slice(0, max);
 };
 
 export async function POST(request: NextRequest) {
@@ -129,25 +128,38 @@ export async function POST(request: NextRequest) {
       ? '[API] Rota nacional Brasil - buscando todos provedores'
       : '[API] Rota internacional - buscando todos provedores');
 
-    const providers = await Promise.all([
-      runProvider('ignav', () => searchWithIgnav(params)),
-      runProvider('googleFlights', () => searchWithSerpAPI(params)),
-      runProvider('travelpayouts', () => searchTravelpayoutsFlights(params)),
-      runProvider('airScraper', () => searchWithAirScraper(params)),
-    ]);
+    // 1) Preco ao vivo (Ignav). Quando responde, e a unica fonte exibida:
+    //    misturar precos em cache de outras datas com precos reais engana o usuario.
+    const ignavRun = await runProvider('ignav', () => searchWithIgnav(params));
+    let providers: ProviderRun[] = [ignavRun];
+    let topFlights: Flight[];
 
-    const allFlights = providers.flatMap((p) => p.flights);
+    if (ignavRun.flights.length > 0) {
+      topFlights = rankFlights(ignavRun.flights, MAX_LIVE_RESULTS);
+      console.log(`[API] Ignav: ${ignavRun.flights.length} voos ao vivo`);
+    } else {
+      // 2) Reserva: so quando a Ignav falha ou nao tem oferta para a rota.
+      const fallback = await Promise.all([
+        runProvider('googleFlights', () => searchWithSerpAPI(params)),
+        runProvider('travelpayouts', () => searchTravelpayoutsFlights(params)),
+        runProvider('airScraper', () => searchWithAirScraper(params)),
+      ]);
+      providers = [ignavRun, ...fallback];
+      const allFlights = fallback.flatMap((p) => p.flights);
+      const { realistic, minPrice } = dedupeAndFilterFlights(allFlights);
+      console.log(`[API] Reserva: ${allFlights.length} voos, ${realistic.length} realistas (min: R$${minPrice})`);
+      topFlights = rankFlights(realistic);
+    }
+
     const providerMap = buildProviderMap(providers);
-    const { realistic, minPrice } = dedupeAndFilterFlights(allFlights);
-    const warnings = buildWarnings(providerMap, realistic.length);
-
-    console.log(`[API] Combined ${allFlights.length} flights, ${realistic.length} realistic (min: R${minPrice})`);
-
-    const topFlights = rankFlights(realistic);
+    const warnings = buildWarnings(providerMap, topFlights.length);
+    if (ignavRun.flights.length === 0 && topFlights.length > 0) {
+      warnings.push('Precos ao vivo indisponiveis nesta busca. Os valores exibidos sao estimativas e podem mudar no site do parceiro.');
+    }
 
     const payload: SearchResponse = {
       flights: topFlights,
-      provider: topFlights.length > 0 ? 'Multi Provedores' : 'none',
+      provider: topFlights.length > 0 ? (ignavRun.flights.length > 0 ? 'Ignav' : 'Multi Provedores') : 'none',
       count: topFlights.length,
       providers: providerMap,
       warnings,
