@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchWithSerpAPI, searchWithAirScraper } from '@/lib/flight-providers';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { searchTravelpayoutsFlights } from '@/lib/travelpayouts';
+import { searchWithIgnav } from '@/lib/ignav';
 import { SearchParams, Flight, ProviderHealth, SearchResponse } from '@/lib/types';
 import { getRegionAirports } from '@/lib/regions-config';
 const isDomesticBR = (origin: string, destination: string) => {
@@ -64,7 +65,11 @@ const dedupeAndFilterFlights = (flights: Flight[]) => {
     return airline !== 'AV' && airline !== 'AVIANCA' && !airline.includes('AVIANCA');
   });
 
-  const prices = unique.map((f) => parseFloat(f.price.total) || Infinity);
+  // Quando ha precos ao vivo (Ignav), eles ancoram o filtro: um preco antigo
+  // de cache de outro provedor nao pode esconder os voos reais.
+  const live = unique.filter((f) => f.id.startsWith('ignav-'));
+  const anchor = live.length > 0 ? live : unique;
+  const prices = anchor.map((f) => parseFloat(f.price.total) || Infinity);
   const minPrice = Math.min(...prices);
   const realistic = unique.filter((f) => {
     const p = parseFloat(f.price.total) || Infinity;
@@ -125,6 +130,7 @@ export async function POST(request: NextRequest) {
       : '[API] Rota internacional - buscando todos provedores');
 
     const providers = await Promise.all([
+      runProvider('ignav', () => searchWithIgnav(params)),
       runProvider('googleFlights', () => searchWithSerpAPI(params)),
       runProvider('travelpayouts', () => searchTravelpayoutsFlights(params)),
       runProvider('airScraper', () => searchWithAirScraper(params)),
