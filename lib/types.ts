@@ -29,6 +29,8 @@ export interface Flight {
   amenities?: string[];
   stops?: number;
   purchaseUrl?: string;
+  /** Link de afiliado para comparar a mesma rota e datas em outro site. */
+  compareUrl?: string;
   travelerPricings?: any[];
 }
 

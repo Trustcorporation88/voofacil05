@@ -434,7 +434,7 @@ export function LandingResultsSection({
                       <p className="text-[10px] text-brand-gray-500">ida e volta</p>
                     )}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap justify-end gap-2">
                     <button
                       onClick={() => setSelectedFlight(flight)}
                       className="px-4 py-2.5 border border-brand-charcoal text-brand-charcoal text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-brand-charcoal hover:text-white transition-all"
@@ -449,6 +449,16 @@ export function LandingResultsSection({
                         className="px-4 py-2.5 bg-brand-charcoal text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-brand-primary transition-all flex items-center gap-1.5"
                       >
                         Comprar <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                    {flight.compareUrl && (
+                      <a
+                        href={flight.compareUrl}
+                        target="_blank"
+                        rel="noopener noreferrer sponsored"
+                        className="px-4 py-2.5 border border-brand-gray-300 text-brand-gray-600 text-xs font-bold uppercase tracking-wider rounded-xl hover:border-brand-charcoal hover:text-brand-charcoal transition-all flex items-center gap-1.5"
+                      >
+                        Comparar <ExternalLink className="w-3 h-3" />
                       </a>
                     )}
                   </div>
