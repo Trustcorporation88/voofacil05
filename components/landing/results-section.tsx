@@ -20,6 +20,7 @@ import { FlightDetailsModal } from '@/components/flight-details-modal';
 import { FlexDates } from '@/components/flex-dates';
 import { PriceCalendar } from '@/components/price-calendar';
 import { AIRecommend } from '@/components/ai-recommend';
+import { MilesCalculator } from '@/components/miles-calculator';
 
 interface ResultsSectionProps {
   flights: Flight[];
@@ -224,6 +225,8 @@ export function LandingResultsSection({
             </span>
           </label>
         </div>
+
+        <MilesCalculator cashPrice={Number.isFinite(lowestPrice) ? lowestPrice : undefined} />
 
         {/* Filters */}
         <div className="p-4 bg-white border border-brand-gray-300/50 rounded-xl">
