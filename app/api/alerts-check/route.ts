@@ -55,7 +55,14 @@ async function sendAlertEmail(toEmail: string, origin: string, destination: stri
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Se CRON_SECRET estiver definido na Vercel, o cron envia este cabecalho
+  // e chamadas externas sao recusadas.
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret && request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const webPushConfigured = configureWebPush();
     const activeAlerts = await prisma.priceAlert.findMany({

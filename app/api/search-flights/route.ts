@@ -1,10 +1,9 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth.config";
 import { NextRequest, NextResponse } from 'next/server';
-import { searchWithSerpAPI, searchWithAmadeus, searchWithAirScraper } from '@/lib/flight-providers';
+import { searchWithSerpAPI, searchWithAirScraper } from '@/lib/flight-providers';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { searchTravelpayoutsFlights } from '@/lib/travelpayouts';
 import { SearchParams, Flight, ProviderHealth, SearchResponse } from '@/lib/types';
 import { getRegionAirports } from '@/lib/regions-config';
@@ -77,115 +76,32 @@ const dedupeAndFilterFlights = (flights: Flight[]) => {
 
 const buildWarnings = (providers: Record<string, ProviderHealth>, flightsCount: number): string[] => {
   const warnings: string[] = [];
-  const hasGoogle = providers.googleFlights?.status === 'ok';
-  const hasTravel = providers.travelpayouts?.status === 'ok';
+  const anyResponded = Object.values(providers).some((p) => p.status === 'ok');
 
-  if (providers.amadeus && providers.amadeus.status !== 'ok' && (hasGoogle || hasTravel)) {
-    warnings.push('Amadeus indisponivel nesta busca. Exibindo fallback via Google Flights e Travelpayouts.');
-  }
-
-  if (flightsCount === 0 && (hasGoogle || hasTravel)) {
+  if (flightsCount === 0 && anyResponded) {
     warnings.push('Provedores responderam, mas sem ofertas para os parametros informados.');
   }
 
   return warnings;
 };
 
-// ============ DEEPSEEK FILTER: Top 10 by Price + Convenience ============
-const filterTop10WithDeepSeek = async (flights: Flight[]): Promise<Flight[]> => {
-  if (flights.length === 0) return flights;
-  const targetCount = Math.min(10, flights.length);
-  
-  try {
-    const deepseekKey = process.env.DEEPSEEK_API_KEY;
-    if (!deepseekKey) {
-      console.log(`[DeepSeek] No API key, returning top ${targetCount} by price`);
-      return flights
-        .sort((a, b) => (parseFloat(a.price.total) || Infinity) - (parseFloat(b.price.total) || Infinity))
-        .slice(0, targetCount);
-    }
+const MAX_RESULTS = 20;
 
-    // Prepare flight data for DeepSeek analysis
-    const flightSummary = flights.slice(0, 50).map((f, idx) => ({
-      id: idx,
-      price: parseFloat(f.price.total) || Infinity,
-      stops: f.stops || 0,
-      airline: f.airline || 'Unknown',
-      duration: f.itineraries?.[0]?.duration || 'Unknown',
-    }));
-
-    const prompt = `Analyze these ${flightSummary.length} flights and select the BEST ${targetCount} based on:
-1. Price (most important)
-2. Number of stops (fewer is better)
-3. Airline reputation
-4. Overall convenience
-
-Flights data:
-${JSON.stringify(flightSummary, null, 2)}
-
-Return ONLY a JSON array with exactly ${targetCount} flight IDs like: [0, 2, 5, 7, ...]
-No explanation, just the JSON array.`;
-const response = await fetch('https://api.deepseek.com/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${deepseekKey}`,
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
-        max_tokens: 100,
-      }),
-    });
-
-    if (!response.ok) {
-      console.log('[DeepSeek] API error, falling back to price sorting');
-      return flights
-        .sort((a, b) => (parseFloat(a.price.total) || Infinity) - (parseFloat(b.price.total) || Infinity))
-        .slice(0, targetCount);
-    }
-
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || '';
-    
-    // Parse DeepSeek response
-    const jsonMatch = content.match(/\[\s*[\d,\s]+\]/);
-    if (!jsonMatch) {
-      console.log('[DeepSeek] Could not parse response, falling back to price sorting');
-      return flights
-        .sort((a, b) => (parseFloat(a.price.total) || Infinity) - (parseFloat(b.price.total) || Infinity))
-        .slice(0, targetCount);
-    }
-
-    const selectedIds = JSON.parse(jsonMatch[0]) as number[];
-    const topFlights = selectedIds
-      .filter(id => id < flights.length)
-      .map(id => flights[id])
-      .slice(0, targetCount);
-
-    console.log(`[DeepSeek] Selected top ${targetCount} flights: ${selectedIds.join(', ')}`);
-    return topFlights.length > 0 ? topFlights : flights.slice(0, targetCount);
-  } catch (error) {
-    console.error('[DeepSeek] Error:', error);
-    // Fallback to price sorting
-    return flights
-      .sort((a, b) => (parseFloat(a.price.total) || Infinity) - (parseFloat(b.price.total) || Infinity))
-      .slice(0, targetCount);
-  }
+// Ordenacao deterministica: menor preco primeiro, menos escalas como desempate.
+const rankFlights = (flights: Flight[]): Flight[] => {
+  const price = (f: Flight) => parseFloat(f.price.total) || Infinity;
+  return [...flights]
+    .sort((a, b) => price(a) - price(b) || (a.stops || 0) - (b.stops || 0))
+    .slice(0, MAX_RESULTS);
 };
 
 export async function POST(request: NextRequest) {
-  // LOGIN_REQUIRED_COTACAO_POST
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.email) {
+  // Busca aberta (sem login), com limite por IP para proteger a cota dos provedores.
+  const limit = checkRateLimit(`search:${getClientIp(request)}`, 15, 10 * 60 * 1000);
+  if (!limit.allowed) {
     return NextResponse.json(
-      {
-        error: "Faça login para fazer uma cotação.",
-        loginRequired: true,
-      },
-      { status: 401 }
+      { error: 'Muitas buscas em pouco tempo. Aguarde alguns minutos e tente novamente.' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } }
     );
   }
 
@@ -211,7 +127,6 @@ export async function POST(request: NextRequest) {
     const providers = await Promise.all([
       runProvider('googleFlights', () => searchWithSerpAPI(params)),
       runProvider('travelpayouts', () => searchTravelpayoutsFlights(params)),
-      runProvider('amadeus', () => searchWithAmadeus(params)),
       runProvider('airScraper', () => searchWithAirScraper(params)),
     ]);
 
@@ -222,12 +137,11 @@ export async function POST(request: NextRequest) {
 
     console.log(`[API] Combined ${allFlights.length} flights, ${realistic.length} realistic (min: R${minPrice})`);
 
-    // Filter top 10 using DeepSeek for intelligent comparison
-    const topFlights = await filterTop10WithDeepSeek(realistic);
+    const topFlights = rankFlights(realistic);
 
     const payload: SearchResponse = {
       flights: topFlights,
-      provider: topFlights.length > 0 ? 'Multi Provedores + DeepSeek' : 'none',
+      provider: topFlights.length > 0 ? 'Multi Provedores' : 'none',
       count: topFlights.length,
       providers: providerMap,
       warnings,
