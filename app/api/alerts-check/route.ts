@@ -34,19 +34,19 @@ async function sendAlertEmail(toEmail: string, origin: string, destination: stri
     await client.emails.send({
       from: process.env.RESEND_FROM || "onboarding@resend.dev",
       to: toEmail,
-      subject: `✈️ Voos Cortex: Preço baixou! ${origin} → ${destination} por R$${Math.round(price)}`,
+      subject: `✈️ Voofacil: Preço baixou! ${origin} → ${destination} por R$${Math.round(price)}`,
       html: `
         <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:24px;background:#f9fafb;border-radius:12px">
-          <h2 style="color:#1a56db;margin-bottom:8px">✈️ Alerta de Preço - Voos Cortex</h2>
+          <h2 style="color:#1a56db;margin-bottom:8px">✈️ Alerta de Preço - Voofacil</h2>
           <p style="font-size:18px;font-weight:bold;color:#111">
             ${origin} → ${destination}
           </p>
           <p style="font-size:32px;font-weight:bold;color:#16a34a">R$ ${Math.round(price)}</p>
           <p style="color:#555">Seu alvo era <strong>R$ ${targetPrice}</strong> — o preço chegou lá!</p>
-          <a href="https://www.vooscortex.com.br" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#1a56db;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">
+          <a href="https://www.voofacil.online" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#1a56db;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">
             Ver passagem agora
           </a>
-          <p style="font-size:12px;color:#999;margin-top:24px">Voos Cortex · vooscortex.com.br</p>
+          <p style="font-size:12px;color:#999;margin-top:24px">Voofacil · voofacil.online</p>
         </div>
       `,
     });
@@ -141,7 +141,7 @@ export async function GET(request: Request) {
                       title: "✈️ Preço Baixou!",
                       body: `${alert.origin} → ${alert.destination}: R$${Math.round(lowestPrice)} (alvo: R$${alert.targetPrice})`,
                       tag: `alert-${alert.id}`,
-                      url: "https://www.vooscortex.com.br",
+                      url: "https://www.voofacil.online",
                     })
                   );
                   pushesSent++;

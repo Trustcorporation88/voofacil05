@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Globe, Mail, ShieldCheck } from "lucide-react";
 
 export function LandingFooter() {
@@ -8,14 +9,18 @@ export function LandingFooter() {
       <div className="px-6 max-w-7xl mx-auto">
         <div className="grid gap-10 md:grid-cols-[1.2fr_1fr_0.8fr] items-start">
           <div className="flex flex-col gap-4">
-            <span className="text-2xl font-bold tracking-tighter">
-              Voos Cortex
-            </span>
+            <Image
+              src="/logo-voofacil-branco.png"
+              alt="Voofacil"
+              width={704}
+              height={192}
+              className="h-12 w-auto object-contain object-left"
+            />
             <p className="text-sm text-brand-gray-300 leading-relaxed max-w-md">
               Plataforma para buscar, comparar e acompanhar opções de passagens aéreas com mais clareza, praticidade e transparência.
             </p>
             <p className="text-xs text-brand-gray-400 font-medium">
-              © 2026 Voos Cortex. Todos os direitos reservados.
+              © 2026 Voofacil. Todos os direitos reservados.
             </p>
           </div>
 
@@ -39,8 +44,8 @@ export function LandingFooter() {
 
           <div className="flex md:justify-end gap-5">
             <a
-              href="https://www.vooscortex.com.br"
-              aria-label="Site Voos Cortex"
+              href="https://www.voofacil.online"
+              aria-label="Site do Voofacil"
               className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center opacity-70 hover:opacity-100 hover:bg-white/10 transition-all"
             >
               <Globe className="w-5 h-5" />
@@ -64,7 +69,7 @@ export function LandingFooter() {
 
         <div className="mt-10 pt-8 border-t border-white/10">
           <p className="text-[11px] text-brand-gray-400 leading-relaxed">
-            A Voos Cortex não é uma companhia aérea e não opera aeronaves. Tarifas, disponibilidade, bagagem, remarcação, cancelamento e demais condições dependem de companhias, agências, provedores e regras da tarifa escolhida. Confira sempre as informações finais antes da compra.
+            O Voofacil não é uma companhia aérea e não opera aeronaves. Tarifas, disponibilidade, bagagem, remarcação, cancelamento e demais condições dependem de companhias, agências, provedores e regras da tarifa escolhida. Confira sempre as informações finais antes da compra.
           </p>
         </div>
       </div>

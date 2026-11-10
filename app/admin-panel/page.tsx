@@ -129,7 +129,7 @@ export default function AdminPage() {
           <div className="flex items-center gap-3 mb-6">
             <Shield className="w-8 h-8 text-blue-600" />
             <div>
-              <h1 className="text-xl font-bold">Admin Voos Cortex</h1>
+              <h1 className="text-xl font-bold">Admin Voofacil</h1>
               <p className="text-xs text-gray-500">Acesso restrito</p>
             </div>
           </div>
@@ -218,7 +218,7 @@ export default function AdminPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Shield className="w-7 h-7 text-blue-600" />
-            Painel Admin - Voos Cortex
+            Painel Admin - Voofacil
           </h1>
 
           <div className="flex items-center gap-3">

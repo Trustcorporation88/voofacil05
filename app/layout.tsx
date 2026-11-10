@@ -10,37 +10,37 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const siteUrl = "https://www.vooscortex.com.br";
+const siteUrl = "https://www.voofacil.online";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Voos Cortex | Compare Passagens Aéreas em Segundos",
-    template: "%s | Voos Cortex",
+    default: "Voofacil | Compare Passagens Aéreas em Segundos",
+    template: "%s | Voofacil",
   },
   description:
     "Compare passagens aéreas, acompanhe alertas de preço e encontre opções de voos nacionais e internacionais com mais rapidez e clareza.",
   manifest: "/manifest.webmanifest",
-  applicationName: "Voos Cortex",
+  applicationName: "Voofacil",
   keywords: [
     "passagem aérea",
     "passagens aéreas baratas",
     "voos baratos",
     "comparar voos",
     "alerta de preço",
-    "Voos Cortex",
+    "Voofacil",
     "voos nacionais",
     "voos internacionais",
   ],
-  authors: [{ name: "Voos Cortex" }],
-  creator: "Voos Cortex",
-  publisher: "Voos Cortex",
+  authors: [{ name: "Voofacil" }],
+  creator: "Voofacil",
+  publisher: "Voofacil",
   openGraph: {
-    title: "Voos Cortex | Compare Passagens Aéreas em Segundos",
+    title: "Voofacil | Compare Passagens Aéreas em Segundos",
     description:
       "Busque, compare e acompanhe preços de passagens aéreas com uma experiência simples e otimizada para celular.",
     url: siteUrl,
-    siteName: "Voos Cortex",
+    siteName: "Voofacil",
     locale: "pt_BR",
     type: "website",
   },
@@ -59,8 +59,11 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   icons: {
-    icon: "/favicon.svg",
-    apple: "/icons/icon-192.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.png", type: "image/png", sizes: "64x64" },
+    ],
+    apple: "/apple-icon.png",
   },
 };
 

@@ -72,7 +72,7 @@ export function CasesSection() {
         className="text-center mb-16"
       >
         <span className="inline-block text-[10px] font-bold text-brand-gray-600 uppercase tracking-[0.3em] mb-4">
-          POR QUE CORTEX
+          POR QUE VOOFACIL
         </span>
         <h2 className="text-4xl md:text-5xl font-bold text-brand-charcoal tracking-tight">
           Benchmarks da Indústria

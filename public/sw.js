@@ -1,7 +1,7 @@
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open("voofacil-static-v1").then((cache) => {
-      return cache.addAll(["/", "/manifest.webmanifest", "/voos-cortex-logo-v2.png", "/favicon.svg"]);
+    caches.open("voofacil-static-v2").then((cache) => {
+      return cache.addAll(["/", "/manifest.webmanifest", "/logo-voofacil.png", "/favicon.png"]);
     })
   );
 
@@ -47,7 +47,7 @@ self.addEventListener("fetch", (event) => {
           }
 
           const responseToCache = response.clone();
-          caches.open("voofacil-static-v1").then((cache) => cache.put(request, responseToCache));
+          caches.open("voofacil-static-v2").then((cache) => cache.put(request, responseToCache));
           return response;
         })
         .catch(() => caches.match("/"));
@@ -61,15 +61,15 @@ self.addEventListener("push", (event) => {
   const data = event.data.json();
   const options = {
     body: data.body || "Novo alerta de preço!",
-    icon: "/voos-cortex-logo-v2.png",
-    badge: "/voos-cortex-logo-v2.png",
+    icon: "/icons/icon-192.png",
+    badge: "/favicon.png",
     data: { url: data.url || "/" },
     vibrate: [200, 100, 200],
     tag: data.tag || "price-alert",
     requireInteraction: true,
   };
 
-  event.waitUntil(self.registration.showNotification(data.title || "CortexAirlines", options));
+  event.waitUntil(self.registration.showNotification(data.title || "Voofacil", options));
 });
 
 self.addEventListener("notificationclick", (event) => {

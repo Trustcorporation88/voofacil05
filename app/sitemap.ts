@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { POPULAR_ROUTES, getRouteSlug } from "@/lib/popular-routes";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://www.vooscortex.com.br";
+  const baseUrl = "https://www.voofacil.online";
   const now = new Date();
 
   const staticPages = [

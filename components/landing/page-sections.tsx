@@ -148,7 +148,7 @@ export function ComoFuncionaSection() {
             Uma busca simples, com informações mais organizadas
           </h2>
           <p className="mt-5 text-base md:text-lg text-white/70 leading-relaxed">
-            A Voos Cortex ajuda você a sair da dúvida mais rápido, reunindo os dados que realmente importam para escolher um voo.
+            O Voofacil ajuda você a sair da dúvida mais rápido, reunindo os dados que realmente importam para escolher um voo.
           </p>
         </motion.div>
 
@@ -194,7 +194,7 @@ const VALORES = [
   {
     icon: ShieldCheck,
     title: "Transparência primeiro",
-    desc: "A Voos Cortex não é uma companhia aérea. Somos uma plataforma para busca, comparação e organização de informações de voos.",
+    desc: "O Voofacil não é uma companhia aérea. Somos uma plataforma para busca, comparação e organização de informações de voos.",
     bg: "bg-white border border-brand-gray-300/50",
     fg: "text-brand-charcoal",
   },
@@ -279,8 +279,8 @@ export function TransparenciaSection() {
 
 const FAQS = [
   {
-    q: "A Voos Cortex vende passagens diretamente?",
-    a: "A Voos Cortex funciona como uma plataforma de busca, comparação e organização de informações de voos. Dependendo da integração disponível, a finalização pode acontecer em ambiente parceiro, companhia aérea ou fluxo indicado na própria plataforma.",
+    q: "O Voofacil vende passagens diretamente?",
+    a: "O Voofacil funciona como uma plataforma de busca, comparação e organização de informações de voos. Dependendo da integração disponível, a finalização pode acontecer em ambiente parceiro, companhia aérea ou fluxo indicado na própria plataforma.",
   },
   {
     q: "Os preços exibidos são garantidos?",
@@ -299,8 +299,8 @@ const FAQS = [
     a: "Você pode acompanhar uma rota ou busca específica. Quando houver mudança relevante ou oportunidade dentro dos critérios definidos, a plataforma pode enviar uma notificação, conforme suas permissões e configurações.",
   },
   {
-    q: "A Voos Cortex é uma companhia aérea?",
-    a: "Não. A Voos Cortex não opera aeronaves, não possui frota própria e não presta serviço de transporte aéreo. A plataforma ajuda usuários a buscar, comparar e acompanhar opções de voos.",
+    q: "O Voofacil é uma companhia aérea?",
+    a: "Não. O Voofacil não opera aeronaves, não possui frota própria e não presta serviço de transporte aéreo. A plataforma ajuda usuários a buscar, comparar e acompanhar opções de voos.",
   },
 ];
 
