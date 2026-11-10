@@ -18,7 +18,7 @@ const IGNAV_ID = /^[A-Za-z0-9_-]{8,128}$/;
 
 // Resolve o link de compra do voo escolhido no momento do clique e
 // redireciona. Se a Ignav nao tiver um link unico para a viagem inteira,
-// cai na busca da Aviasales (link de afiliado) para a mesma rota e datas.
+// cai na busca do Kiwi.com (link de afiliado) para a mesma rota e datas.
 export async function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams;
   const id = q.get("id") || "";
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     departureDate,
     returnDate,
     passengers,
-  });
+  }, "comprar-reserva");
 
   const limit = checkRateLimit(`booking:${getClientIp(request)}`, 30, 10 * 60 * 1000);
   if (!limit.allowed || !ignavConfigured() || !IGNAV_ID.test(id)) {

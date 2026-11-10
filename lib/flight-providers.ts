@@ -65,6 +65,8 @@ export async function searchWithSerpAPI(
 
       console.log(`[SerpAPI] Found ${allFlights.length} flights`);
 
+      const url = await getTravelpayoutsLink(params, 'estimativa');
+
       return allFlights.slice(0, 20).map((flight: any, idx: number) => {
         const priceValue = typeof flight.price === 'number' ? flight.price : parseFloat(flight.price) || 0;
 
@@ -109,14 +111,6 @@ export async function searchWithSerpAPI(
             })),
           });
         }
-
-        const fmt = (date: string) => {
-          const d = new Date(date);
-          return `${String(d.getDate()).padStart(2, '0')}${String(d.getMonth() + 1).padStart(2, '0')}`;
-        };
-        const dep = fmt(params.departureDate);
-        const ret = params.returnDate ? fmt(params.returnDate) : '';
-        const url = `https://www.aviasales.com/search/${params.origin}${dep}${params.destination}${ret}${params.passengers || 1}?marker=${process.env.TRAVELPAYOUTS_MARKER || '716705'}`;
 
         return {
           id: `serp-${idx}-${priceValue}`,

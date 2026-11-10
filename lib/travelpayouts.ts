@@ -4,31 +4,48 @@
 const TRAVELPAYOUTS_MARKER = process.env.TRAVELPAYOUTS_MARKER || "716705";
 const TRAVELPAYOUTS_TOKEN = process.env.TRAVELPAYOUTS_TOKEN;
 
-/**
- * Gera link de afiliado Travelpayouts para busca de voos
- * Garante que você receba cashback/comissão de todas as vendas
- */
-export async function getTravelpayoutsLink(params: {
-  origin: string;
-  destination: string;
-  departureDate: string;
-  returnDate?: string;
-  passengers?: number;
-}): Promise<string> {
-  const { origin, destination, departureDate, returnDate, passengers = 1 } = params;
-  
-  const formatDate = (date: string) => {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    return `${day}${month}`;
-  };
+// Programa de voos conectado na conta Travelpayouts: Kiwi.com (promo_id 3791).
+// Formato oficial do link de afiliado:
+// https://support.travelpayouts.com/hc/en-us/articles/360010109719-Kiwi-com-affiliate-links
+const KIWI_PROMO_ID = "3791";
+const KIWI_CLICK_URL = "https://c111.travelpayouts.com/click";
 
-  const depDate = formatDate(departureDate);
-  const retDate = returnDate ? formatDate(returnDate) : '';
-  const searchString = `${origin}${depDate}${destination}${retDate}${passengers}`;
-  
-  return `https://www.aviasales.com/search/${searchString}?marker=${TRAVELPAYOUTS_MARKER}`;
+function buildKiwiLink(
+  params: { origin: string; destination: string; departureDate?: string; returnDate?: string },
+  subId: string,
+): string {
+  const deep = new URLSearchParams({
+    from: params.origin.toUpperCase(),
+    to: params.destination.toUpperCase(),
+  });
+  if (params.departureDate) deep.set("departure", params.departureDate.slice(0, 10));
+  if (params.returnDate) deep.set("return", params.returnDate.slice(0, 10));
+
+  const click = new URLSearchParams({
+    shmarker: `${TRAVELPAYOUTS_MARKER}.${subId}`,
+    promo_id: KIWI_PROMO_ID,
+    source_type: "customlink",
+    type: "click",
+    custom_url: `https://www.kiwi.com/deep?${deep.toString()}`,
+  });
+  return `${KIWI_CLICK_URL}?${click.toString()}`;
+}
+
+/**
+ * Gera o link de afiliado (Kiwi.com via Travelpayouts) para a mesma rota e datas.
+ * O subId aparece nas estatisticas do Travelpayouts e identifica a origem do clique.
+ */
+export async function getTravelpayoutsLink(
+  params: {
+    origin: string;
+    destination: string;
+    departureDate: string;
+    returnDate?: string;
+    passengers?: number;
+  },
+  subId = "busca",
+): Promise<string> {
+  return buildKiwiLink(params, subId);
 }
 
 /**
@@ -100,18 +117,10 @@ export async function searchTravelpayoutsFlights(params: {
       const returnPrice = cheapestReturn?.price || 0;
       const totalPrice = hasReturn ? price + returnPrice : price;
 
-      const fmt = (date: string) => {
-        const d = new Date(date);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        return `${day}${month}`;
-      };
-
-      const depUrl = fmt(params.departureDate);
-      const retUrl = params.returnDate ? fmt(params.returnDate) : '';
-      const adults = params.passengers || 1;
-      const searchPath = `${origin}${depUrl}${destination}${retUrl}${adults}`;
-      const purchaseUrl = `https://www.aviasales.com/search/${searchPath}?marker=${TRAVELPAYOUTS_MARKER}`;
+      const purchaseUrl = buildKiwiLink(
+        { origin, destination, departureDate: params.departureDate, returnDate: params.returnDate },
+        "estimativa",
+      );
 
       const itineraries = [];
       const depTime = flight.departure_at || departureDate;
@@ -217,7 +226,7 @@ export async function getTravelpayoutsCalendarLink(params: {
   departureDate?: string;
 }) {
   const { origin, destination } = params;
-  return `https://www.aviasales.com/search/${origin}${destination}?marker=${TRAVELPAYOUTS_MARKER}`;
+  return buildKiwiLink({ origin, destination, departureDate: params.departureDate }, "calendario");
 }
 
 

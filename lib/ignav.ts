@@ -179,7 +179,7 @@ export async function searchWithIgnav(params: SearchParams): Promise<Flight[]> {
     throw new Error(`Ignav ${status} ${data?.error?.code || ""}`.trim());
   }
 
-  const compareUrl = await getTravelpayoutsLink(params);
+  const compareUrl = await getTravelpayoutsLink(params, "comparar");
   const flights = (data.itineraries || [])
     .map((it, idx) => mapIgnavItinerary(it, params, idx, compareUrl))
     .filter((f): f is Flight => f !== null)
