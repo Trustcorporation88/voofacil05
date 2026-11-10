@@ -7,10 +7,8 @@ export function PriceCurrencyNotice() {
         <Info className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
         <p className="leading-relaxed">
           Os preços exibidos no Voos Cortex estão em reais <strong>(BRL)</strong>.
-          Ao continuar para a <strong>Aviasales</strong>, algumas ofertas podem
-          aparecer em dólar <strong>(USD)</strong> na etapa inicial. Quando a
-          compra for concluída com uma agência brasileira parceira, o pagamento
-          final será realizado em reais <strong>(BRL)</strong>.
+          A compra é concluída no site da companhia aérea ou de um parceiro.
+          Confira lá o valor final e a moeda antes de pagar.
         </p>
       </div>
     </div>

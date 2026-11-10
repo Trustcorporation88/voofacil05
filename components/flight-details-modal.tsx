@@ -210,7 +210,7 @@ export function FlightDetailsModal({ flight, searchParams, onClose }: FlightDeta
         <div className="sticky bottom-0 bg-gray-50 p-6 rounded-b-2xl border-t">
           <div className="flex items-center justify-between gap-4">
             <div className="text-sm text-gray-600">
-              <p>✅ Parceiro oficial: <strong>Aviasales</strong></p>
+              <p>✅ Compra no site da companhia aérea ou de um parceiro</p>
               <p className="text-xs text-gray-500 mt-1">
                 Você será redirecionado para finalizar sua compra
               </p>

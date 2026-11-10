@@ -158,10 +158,11 @@ export function LandingResultsSection({
           </div>
         </div>
 
-        {/* Aviasales notice */}
+        {/* Aviso de preco e afiliacao */}
         <p className="text-xs text-brand-gray-500 mb-4">
-          ⓘ Temos parceria com <strong>AVIASALES</strong>. Preços já incluem taxa de embarque e
-          impostos. Valor final no checkout via parceiro.
+          ⓘ Os preços vêm de buscas ao vivo e podem mudar. Confira valor final, taxas e bagagem
+          no site da companhia ou do parceiro antes de pagar. O botão Comparar abre o Kiwi.com
+          por um link de afiliado.
         </p>
 
         {/* Avisos técnicos só para admin/dev */}
