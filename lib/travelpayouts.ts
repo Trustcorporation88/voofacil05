@@ -1,7 +1,7 @@
 // lib/travelpayouts.ts
 "use server";
 
-const TRAVELPAYOUTS_MARKER = process.env.TRAVELPAYOUTS_MARKER || "720173";
+const TRAVELPAYOUTS_MARKER = process.env.TRAVELPAYOUTS_MARKER || "716705";
 const TRAVELPAYOUTS_TOKEN = process.env.TRAVELPAYOUTS_TOKEN;
 
 /**

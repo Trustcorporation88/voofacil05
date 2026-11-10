@@ -81,7 +81,7 @@ export default function RootLayout({
         <PwaBootstrap />
         <SessionProvider>{children}</SessionProvider>
         <Script
-          src="https://www.travelpayouts.com/weedle/widget.js?marker=720173"
+          src="https://www.travelpayouts.com/weedle/widget.js?marker=716705"
           strategy="afterInteractive"
         />
       </body>
