@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
 const DEFAULT_FINGERPRINTS = [
-  "4F:6F:57:99:A2:84:E8:B7:B2:AB:56:88:9E:01:8C:44:FA:9F:FE:10:56:EC:3A:E9:B8:A9:93:70:77:00:2B:9A",
+  // Chave de assinatura online.voofacil.app criada em 10/11/2026 (C:\voofacil05\twa\android.keystore).
+  "13:E6:BD:8D:58:48:1D:DD:25:C6:D5:66:8B:6A:23:17:38:A6:1A:90:CB:EC:03:66:91:51:DC:DA:B3:66:4B:DE",
 ];
 
 function getFingerprints() {
