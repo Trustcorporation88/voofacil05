@@ -236,7 +236,7 @@ export function LandingResultsSection({
           <span className="flex items-center gap-2">
             <Calculator className="w-4 h-4 text-brand-gray-600" />
             <span className="text-xs font-bold text-brand-gray-600 uppercase tracking-widest">
-              Dinheiro ou milhas? Compare
+              Quanto custa em milhas? Ver
             </span>
           </span>
           <ChevronDown className="w-4 h-4 text-brand-gray-600" />

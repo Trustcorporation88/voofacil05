@@ -192,6 +192,7 @@ export default function Home() {
 
       <div className="horizon-line" />
       <MilhasSection
+        search={searchParams}
         cashPrice={(() => {
           const prices = flights.map((f) => parseFloat(f.price.total)).filter((p) => Number.isFinite(p) && p > 0);
           return prices.length > 0 ? Math.min(...prices) : undefined;
