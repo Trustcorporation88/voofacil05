@@ -61,6 +61,14 @@ npx @bubblewrap/cli build
 Quando pedir, informe o caminho, o alias e as senhas da keystore (`android.keystore`).
 Use sempre a mesma keystore: a impressão digital dela precisa bater com a do `assetlinks.json`.
 
+### Erros comuns no build
+
+- `Could not reserve enough space for ... object heap`: falta memória para o Gradle.
+  Em `twa/gradle.properties`, use `org.gradle.jvmargs=-Xmx1024m` (ou `-Xmx768m`).
+  O `bubblewrap update` volta esse valor para 1536m, então confira depois de cada update.
+- `minSdkVersion 21 cannot be smaller than version 24`: a biblioteca androidbrowserhelper exige
+  Android 7.0. O projeto já usa `minSdkVersion 24`.
+
 ## 5) Play Console
 
 1. Envie o arquivo `.aab`.
