@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -11,8 +12,25 @@ export async function POST(request: Request) {
     );
   }
 
+  // A chamada de IA e paga: limita por usuario e o tamanho do pedido.
+  const limit = checkRateLimit(`ia:${session.user.email}`, 10, 10 * 60 * 1000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "Muitos pedidos em pouco tempo. Aguarde alguns minutos." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+    );
+  }
+
   try {
     const { messages } = await request.json();
+    if (
+      !Array.isArray(messages) ||
+      messages.length === 0 ||
+      messages.length > 12 ||
+      JSON.stringify(messages).length > 40000
+    ) {
+      return NextResponse.json({ error: "Pedido inválido." }, { status: 400 });
+    }
     const apiKey = process.env.DEEPSEEK_API_KEY;
 
     if (!apiKey) {

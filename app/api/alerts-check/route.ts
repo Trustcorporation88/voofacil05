@@ -42,7 +42,7 @@ async function sendAlertEmail(toEmail: string, origin: string, destination: stri
             ${origin} → ${destination}
           </p>
           <p style="font-size:32px;font-weight:bold;color:#16a34a">R$ ${Math.round(price)}</p>
-          <p style="color:#555">Seu alvo era <strong>R$ ${targetPrice}</strong> — o preço chegou lá!</p>
+          <p style="color:#555">Seu alvo era <strong>R$ ${targetPrice}</strong>, e o preço chegou lá!</p>
           <a href="https://www.voofacil.online" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#1a56db;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">
             Ver passagem agora
           </a>

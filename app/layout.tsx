@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import { SessionProvider } from "@/components/session-provider";
 import { PwaBootstrap } from "@/components/pwa-bootstrap";
@@ -19,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s | Voofacil",
   },
   description:
-    "Compare passagens aéreas, acompanhe alertas de preço e encontre opções de voos nacionais e internacionais com mais rapidez e clareza.",
+    "Compare passagens aéreas e hotéis, acompanhe alertas de preço e encontre opções de voos nacionais e internacionais com mais rapidez e clareza.",
   manifest: "/manifest.webmanifest",
   applicationName: "Voofacil",
   keywords: [
@@ -31,6 +30,9 @@ export const metadata: Metadata = {
     "Voofacil",
     "voos nacionais",
     "voos internacionais",
+    "hotéis",
+    "comparar hotéis",
+    "passagens com milhas",
   ],
   authors: [{ name: "Voofacil" }],
   creator: "Voofacil",
@@ -67,6 +69,27 @@ export const metadata: Metadata = {
   },
 };
 
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "Voofacil",
+      url: siteUrl,
+      logo: `${siteUrl}/logo-voofacil.png`,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      name: "Voofacil",
+      url: siteUrl,
+      inLanguage: "pt-BR",
+      publisher: { "@id": `${siteUrl}/#organization` },
+    },
+  ],
+};
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -83,9 +106,9 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <PwaBootstrap />
         <SessionProvider>{children}</SessionProvider>
-        <Script
-          src="https://www.travelpayouts.com/weedle/widget.js?marker=716705"
-          strategy="afterInteractive"
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
         />
       </body>
     </html>

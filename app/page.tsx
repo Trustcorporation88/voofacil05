@@ -47,6 +47,7 @@ export default function Home() {
   const [showAI, setShowAI] = useState(false);
   const [providerHealth, setProviderHealth] = useState<Record<string, ProviderHealth>>({});
   const [searchWarnings, setSearchWarnings] = useState<string[]>([]);
+  const [prefill, setPrefill] = useState<SearchParams | null>(null);
 
   const { data: session } = useSession();
 
@@ -66,6 +67,24 @@ export default function Home() {
     const interval = setInterval(fetchUnread, 60000);
     return () => clearInterval(interval);
   }, [session, fetchUnread]);
+
+  // Links das paginas de rota (/voos/gru-gig) chegam como /?origem=GRU&destino=GIG.
+  // Preenche o formulario, sem buscar sozinho, para nao gastar a cota dos provedores.
+  useEffect(() => {
+    const qs = new URLSearchParams(window.location.search);
+    const origin = (qs.get("origem") || "").toUpperCase();
+    const destination = (qs.get("destino") || "").toUpperCase();
+    const date = qs.get("data") || "";
+    const iata = /^[A-Z]{3}$/;
+    if (!iata.test(origin) || !iata.test(destination)) return;
+    const today = new Date().toISOString().split("T")[0];
+    setPrefill({
+      origin,
+      destination,
+      departureDate: /^\d{4}-\d{2}-\d{2}$/.test(date) && date >= today ? date : "",
+      passengers: 1,
+    });
+  }, []);
 
   const handleSearch = async (params: SearchParams) => {
     setSearchParams(params);
@@ -156,13 +175,14 @@ export default function Home() {
         onDiscover={() =>
           document.getElementById("busca")?.scrollIntoView({ behavior: "smooth" })
         }
-        onBook={() => setShowLoginModal(true)}
+        onBook={() => (session ? setShowAlertsModal(true) : setShowLoginModal(true))}
       />
 
       <LandingSearchSection
+        key={prefill ? `${prefill.origin}-${prefill.destination}` : "busca"}
         onSearch={handleSearch}
         loading={loading}
-        initialParams={searchParams}
+        initialParams={searchParams || prefill}
       />
 
       {(flights.length > 0 || loading) && searchParams && (

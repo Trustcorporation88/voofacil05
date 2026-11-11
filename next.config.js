@@ -22,14 +22,16 @@ const nextConfig = {
   },
   images: { unoptimized: true },
   async headers() {
+    // A API so e usada pelo proprio site (mesma origem), entao nao precisa de
+    // CORS aberto. Antes, qualquer site podia chamar /api com credenciais.
     return [
       {
-        source: "/api/:path*",
+        source: "/:path*",
         headers: [
-          { key: "Access-Control-Allow-Credentials", value: "true" },
-          { key: "Access-Control-Allow-Origin", value: "*" },
-          { key: "Access-Control-Allow-Methods", value: "GET,POST,PUT,PATCH,DELETE,OPTIONS" },
-          { key: "Access-Control-Allow-Headers", value: "Content-Type, Authorization" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
     ];

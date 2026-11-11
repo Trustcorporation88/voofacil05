@@ -122,6 +122,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const iata = /^[A-Za-z]{3}$/;
+    const isoDate = /^\d{4}-\d{2}-\d{2}$/;
+    if (
+      !iata.test(String(params.origin)) ||
+      !iata.test(String(params.destination)) ||
+      !isoDate.test(String(params.departureDate)) ||
+      (params.returnDate && !isoDate.test(String(params.returnDate)))
+    ) {
+      return NextResponse.json({ error: 'Aeroporto ou data inválidos.' }, { status: 400 });
+    }
+    if (String(params.origin).toUpperCase() === String(params.destination).toUpperCase()) {
+      return NextResponse.json({ error: 'A origem e o destino precisam ser diferentes.' }, { status: 400 });
+    }
+    params.origin = String(params.origin).toUpperCase();
+    params.destination = String(params.destination).toUpperCase();
+    params.passengers = Math.min(Math.max(Number(params.passengers) || 1, 1), 9);
+
     const domestic = isDomesticBR(params.origin, params.destination);
 
     console.log(domestic
@@ -174,7 +191,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[API] Error searching flights:', error);
     return NextResponse.json(
-      { error: 'Erro ao buscar voos. Tente novamente.', details: String(error) },
+      { error: 'Erro ao buscar voos. Tente novamente.' },
       { status: 500 }
     );
   }

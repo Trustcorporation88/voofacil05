@@ -27,3 +27,4 @@ twa/build/
 
 .DS_Store
 Thumbs.db
+tsconfig.tsbuildinfo

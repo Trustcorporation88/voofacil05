@@ -16,7 +16,10 @@ import {
   Ban,
   Calculator,
   ChevronDown,
+  BedDouble,
+  ChevronRight,
 } from 'lucide-react';
+import { POPULAR_AIRPORTS } from '@/lib/airports-data';
 import type { Flight, SearchParams, ProviderHealth } from '@/lib/types';
 import { FlightDetailsModal } from '@/components/flight-details-modal';
 import { FlexDates } from '@/components/flex-dates';
@@ -118,6 +121,15 @@ export function LandingResultsSection({
     disabled: <Ban className="w-3 h-3" />,
   } as const;
 
+  const destinationAirport = POPULAR_AIRPORTS.find((a) => a.iataCode === searchParams.destination);
+  const hotelCity = destinationAirport?.cityName || searchParams.destinationName || searchParams.destination;
+  const hotelsHref = `/hoteis?${new URLSearchParams({
+    q: hotelCity,
+    entrada: searchParams.departureDate,
+    ...(searchParams.returnDate ? { saida: searchParams.returnDate } : {}),
+    adultos: String(searchParams.passengers || 1),
+  }).toString()}`;
+
   return (
     <section id="results" className="py-16 px-6 max-w-5xl mx-auto">
       {/* Header */}
@@ -133,7 +145,7 @@ export function LandingResultsSection({
               </h2>
               <span className="text-brand-gray-500 text-sm">
                 {formatDate(searchParams.departureDate)}
-                {searchParams.returnDate && ` — ${formatDate(searchParams.returnDate)}`}
+                {searchParams.returnDate && ` a ${formatDate(searchParams.returnDate)}`}
               </span>
             </div>
           </div>
@@ -240,6 +252,19 @@ export function LandingResultsSection({
             </span>
           </span>
           <ChevronDown className="w-4 h-4 text-brand-gray-600" />
+        </a>
+
+        <a
+          href={hotelsHref}
+          className="flex items-center justify-between gap-2 p-4 bg-white border border-brand-gray-300/50 rounded-xl hover:border-brand-charcoal transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <BedDouble className="w-4 h-4 text-brand-gray-600" />
+            <span className="text-xs font-bold text-brand-gray-600 uppercase tracking-widest">
+              Hotéis em {hotelCity}
+            </span>
+          </span>
+          <ChevronRight className="w-4 h-4 text-brand-gray-600" />
         </a>
 
         {/* Filters */}
