@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calculator, ChevronDown } from 'lucide-react';
+import { Calculator, ChevronDown, ExternalLink } from 'lucide-react';
 import { compareMilesVsCash } from '@/lib/miles';
 
 const PROGRAMS = [
@@ -15,6 +15,16 @@ const PROGRAMS = [
   'Avios',
   'Outro',
 ];
+
+// Sites oficiais onde a pessoa consulta quantas milhas o voo custa.
+const PROGRAM_LINKS: Record<string, string> = {
+  Smiles: 'https://www.smiles.com.br',
+  'LATAM Pass': 'https://latampass.latam.com/pt_br/',
+  'Azul Fidelidade': 'https://www.voeazul.com.br',
+  Livelo: 'https://www.livelo.com.br',
+  'TAP Miles&Go': 'https://www.flytap.com/pt_br/passagens-milhas',
+  AAdvantage: 'https://www.aa.com',
+};
 
 const brl = (n: number) =>
   n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -31,10 +41,12 @@ const toNumber = (v: string) => {
 interface MilesCalculatorProps {
   /** Menor preco em dinheiro encontrado na busca, usado como valor inicial. */
   cashPrice?: number;
+  /** Mostra a calculadora aberta desde o inicio. */
+  defaultOpen?: boolean;
 }
 
-export function MilesCalculator({ cashPrice }: MilesCalculatorProps) {
-  const [open, setOpen] = useState(false);
+export function MilesCalculator({ cashPrice, defaultOpen = false }: MilesCalculatorProps) {
+  const [open, setOpen] = useState(defaultOpen);
   const [program, setProgram] = useState(PROGRAMS[0]);
   const [cash, setCash] = useState('');
   const [miles, setMiles] = useState('');
@@ -97,6 +109,16 @@ export function MilesCalculator({ cashPrice }: MilesCalculatorProps) {
                   <option key={p} value={p}>{p}</option>
                 ))}
               </select>
+              {PROGRAM_LINKS[program] && (
+                <a
+                  href={PROGRAM_LINKS[program]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-brand-charcoal underline underline-offset-2"
+                >
+                  Ver milhas no site <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
             </div>
             <div>
               <label className={labelClass} htmlFor="miles-cash">Preço em dinheiro (R$)</label>
