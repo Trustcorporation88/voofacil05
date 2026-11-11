@@ -86,6 +86,63 @@ export function buildGoogleHotelsUrl(query: string): string {
   return `https://www.google.com/travel/search?${qs.toString()}`;
 }
 
+// O Google devolve as comodidades em ingles mesmo com hl=pt-br.
+const AMENITIES_PT: Record<string, string> = {
+  "breakfast": "Café da manhã",
+  "free breakfast": "Café da manhã grátis",
+  "breakfast ($)": "Café da manhã (pago)",
+  "wi-fi": "Wi-Fi",
+  "free wi-fi": "Wi-Fi grátis",
+  "wi-fi ($)": "Wi-Fi (pago)",
+  "parking": "Estacionamento",
+  "free parking": "Estacionamento grátis",
+  "parking ($)": "Estacionamento (pago)",
+  "pool": "Piscina",
+  "pools": "Piscinas",
+  "outdoor pool": "Piscina externa",
+  "indoor pool": "Piscina coberta",
+  "hot tub": "Hidromassagem",
+  "air conditioning": "Ar-condicionado",
+  "fitness center": "Academia",
+  "fitness centre": "Academia",
+  "spa": "Spa",
+  "bar": "Bar",
+  "restaurant": "Restaurante",
+  "room service": "Serviço de quarto",
+  "kitchen": "Cozinha",
+  "kitchen in some rooms": "Cozinha em alguns quartos",
+  "airport shuttle": "Traslado do aeroporto",
+  "full-service laundry": "Lavanderia",
+  "laundry service": "Lavanderia",
+  "accessible": "Acessível",
+  "business center": "Centro de negócios",
+  "business centre": "Centro de negócios",
+  "child-friendly": "Bom para crianças",
+  "kid-friendly": "Bom para crianças",
+  "pet-friendly": "Aceita animais",
+  "beach access": "Acesso à praia",
+  "smoke-free property": "Proibido fumar",
+  "golf": "Golfe",
+  "ev charger": "Carregador de carro elétrico",
+  "crib": "Berço",
+  "washer": "Máquina de lavar",
+  "dryer": "Secadora",
+  "balcony": "Varanda",
+  "cable tv": "TV a cabo",
+  "smart tv": "Smart TV",
+  "heating": "Aquecimento",
+  "elevator": "Elevador",
+  "fireplace": "Lareira",
+  "microwave": "Micro-ondas",
+  "oven stove": "Fogão",
+  "ironing board": "Tábua de passar",
+  "outdoor grill": "Churrasqueira",
+  "patio": "Pátio",
+  "all-inclusive available": "All inclusive disponível",
+};
+
+const amenityPt = (a: string): string => AMENITIES_PT[a.trim().toLowerCase()] || a;
+
 const num = (v: unknown): number | undefined =>
   typeof v === "number" && Number.isFinite(v) && v > 0 ? v : undefined;
 
@@ -131,7 +188,8 @@ function mapProperty(raw: any, p: HotelSearchParams, index: number): Hotel | nul
     images,
     amenities: (Array.isArray(raw.amenities) ? raw.amenities : [])
       .filter((a: unknown) => typeof a === "string")
-      .slice(0, 6),
+      .slice(0, 6)
+      .map(amenityPt),
     nearby,
     checkInTime: typeof raw.check_in_time === "string" ? raw.check_in_time : undefined,
     checkOutTime: typeof raw.check_out_time === "string" ? raw.check_out_time : undefined,
