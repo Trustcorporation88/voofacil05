@@ -299,16 +299,39 @@ const FAQS = [
     a: "Você pode acompanhar uma rota ou busca específica. Quando houver mudança relevante ou oportunidade dentro dos critérios definidos, a plataforma pode enviar uma notificação, conforme suas permissões e configurações.",
   },
   {
+    q: "O Voofacil também busca hotéis?",
+    a: "Sim. Na página Hotéis você compara preços de hospedagem no Brasil e no mundo, com valor por noite em reais, avaliações e comodidades. A reserva e o pagamento são feitos no site do parceiro.",
+  },
+  {
+    q: "Como comparo o preço em dinheiro com milhas?",
+    a: "Depois de buscar um voo, a seção Milhas abre a mesma rota e data em buscadores de passagens com milhas. Com a quantidade de milhas em mãos, a calculadora mostra se compensa pagar em reais ou em milhas.",
+  },
+  {
     q: "O Voofacil é uma companhia aérea?",
     a: "Não. O Voofacil não opera aeronaves, não possui frota própria e não presta serviço de transporte aéreo. A plataforma ajuda usuários a buscar, comparar e acompanhar opções de voos.",
   },
 ];
+
+// Dados estruturados para o Google exibir as perguntas no resultado da busca.
+const FAQ_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
 
 export function FaqSection() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
     <section id="faq" className="py-24 px-6 max-w-4xl mx-auto scroll-mt-28">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+      />
       <SectionTitle
         eyebrow="DÚVIDAS FREQUENTES"
         title="O que você precisa saber"

@@ -21,19 +21,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!route) {
     return {
-      title: "Rota não encontrada | Voofacil",
+      title: "Rota não encontrada",
       robots: { index: false, follow: false },
     };
   }
 
-  const title = `Passagens de ${route.originCity} para ${route.destinationCity} | Voofacil`;
+  const title = `Passagens de ${route.originCity} para ${route.destinationCity}`;
   const description = `Compare opções de voos de ${route.originCity} (${route.origin}) para ${route.destinationCity} (${route.destination}), acompanhe preços e encontre alternativas para sua próxima viagem.`;
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: `${title} | Voofacil`,
       description,
       url: `${baseUrl}/voos/${params.rota}`,
       siteName: "Voofacil",
@@ -77,8 +77,7 @@ export default function RotaPage({ params }: Props) {
     },
   };
 
-  const today = new Date().toISOString().split("T")[0];
-  const searchUrl = `/?origem=${route.origin}&destino=${route.destination}&data=${today}#busca`;
+  const searchUrl = `/?origem=${route.origin}&destino=${route.destination}#busca`;
 
   return (
     <>

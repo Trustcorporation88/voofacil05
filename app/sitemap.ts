@@ -1,51 +1,30 @@
 import { MetadataRoute } from "next";
 import { POPULAR_ROUTES, getRouteSlug } from "@/lib/popular-routes";
+import { HOTEL_DESTINATIONS } from "@/lib/hotel-destinations";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.voofacil.online";
   const now = new Date();
 
-  const staticPages = [
-    {
-      url: baseUrl,
-      lastModified: now,
-      changeFrequency: "daily" as const,
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/#busca`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/#beneficios`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/#como-funciona`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/#faq`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    },
+  // Enderecos com "#" nao sao paginas distintas para o Google, por isso ficam fora.
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: baseUrl, lastModified: now, changeFrequency: "daily", priority: 1.0 },
+    { url: `${baseUrl}/hoteis`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
   ];
 
-  const routePages = POPULAR_ROUTES.map((route) => ({
+  const routePages: MetadataRoute.Sitemap = POPULAR_ROUTES.map((route) => ({
     url: `${baseUrl}/voos/${getRouteSlug(route)}`,
     lastModified: now,
-    changeFrequency: "daily" as const,
+    changeFrequency: "daily",
     priority: 0.85,
   }));
 
-  return [...staticPages, ...routePages];
+  const hotelPages: MetadataRoute.Sitemap = HOTEL_DESTINATIONS.map((d) => ({
+    url: `${baseUrl}/hoteis/${d.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  return [...staticPages, ...routePages, ...hotelPages];
 }
-
-

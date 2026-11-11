@@ -28,7 +28,8 @@ interface NavbarProps {
 }
 
 const navItems = [
-  { label: "Buscar", href: "#busca" },
+  { label: "Voos", href: "#busca" },
+  { label: "Hotéis", href: "/hoteis" },
   { label: "Milhas", href: "#milhas" },
   { label: "Benefícios", href: "#beneficios" },
   { label: "Como funciona", href: "#como-funciona" },

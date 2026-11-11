@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[PriceCalendar] Error:", error);
     return NextResponse.json(
-      { error: "Erro ao buscar preços do mês", details: String(error) },
+      { error: "Erro ao buscar preços do mês" },
       { status: 500 }
     );
   }

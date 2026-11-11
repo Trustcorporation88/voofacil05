@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useCallback } from "react";
 import { motion } from "motion/react";
-import { Search } from "lucide-react";
+import { BedDouble, Plane, Search } from "lucide-react";
 import type { SearchParams } from "@/lib/types";
 import { AirportSelect } from "@/components/ui/airport-select";
 import { REGIONS, getDefaultPassengersForRegion } from "@/lib/regions-config";
@@ -33,6 +33,8 @@ export function LandingSearchSection({
     region: initialRegion,
   });
 
+  const [formError, setFormError] = useState("");
+
   const handleRegionChange = useCallback((regionId: string) => {
     setSelectedRegion(regionId);
     setForm((prev) => ({
@@ -45,9 +47,23 @@ export function LandingSearchSection({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.origin || !form.destination || !form.departureDate) {
+    if (!form.origin || !form.destination) {
+      setFormError("Escolha a origem e o destino na lista de aeroportos.");
       return;
     }
+    if (form.origin === form.destination) {
+      setFormError("A origem e o destino precisam ser diferentes.");
+      return;
+    }
+    if (!form.departureDate) {
+      setFormError("Informe a data de ida.");
+      return;
+    }
+    if (form.returnDate && form.returnDate < form.departureDate) {
+      setFormError("A volta precisa ser na mesma data da ida ou depois.");
+      return;
+    }
+    setFormError("");
 
     await onSearch({
       ...form,
@@ -77,6 +93,18 @@ export function LandingSearchSection({
           Informe origem, destino e data para comparar opções disponíveis.
         </p>
       </motion.div>
+
+      <div className="flex justify-center gap-2 mb-5">
+        <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-charcoal text-white text-xs font-bold uppercase tracking-widest">
+          <Plane className="w-4 h-4" /> Voos
+        </span>
+        <a
+          href="/hoteis"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-brand-gray-300 text-brand-gray-600 text-xs font-bold uppercase tracking-widest hover:border-brand-charcoal hover:text-brand-charcoal transition-all"
+        >
+          <BedDouble className="w-4 h-4" /> Hotéis
+        </a>
+      </div>
 
       <motion.form
         onSubmit={handleSubmit}
@@ -194,6 +222,12 @@ export function LandingSearchSection({
           <Search className="w-5 h-5" />
           {loading ? "Buscando voos..." : "Buscar voos"}
         </button>
+
+        {formError && (
+          <p role="alert" className="mt-4 text-sm text-red-600 text-center">
+            {formError}
+          </p>
+        )}
 
         <p className="mt-4 text-[11px] text-brand-gray-500 text-center leading-relaxed">
           Os preços e condições podem mudar conforme disponibilidade, fornecedor, companhia aérea e regras da tarifa.

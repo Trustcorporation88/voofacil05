@@ -17,21 +17,22 @@ export function LandingFooter() {
               className="h-12 w-auto object-contain object-left"
             />
             <p className="text-sm text-brand-gray-300 leading-relaxed max-w-md">
-              Plataforma para buscar, comparar e acompanhar opções de passagens aéreas com mais clareza, praticidade e transparência.
+              Plataforma para buscar, comparar e acompanhar opções de passagens aéreas e hospedagem com mais clareza, praticidade e transparência.
             </p>
             <p className="text-xs text-brand-gray-400 font-medium">
-              © 2026 Voofacil. Todos os direitos reservados.
+              © {new Date().getFullYear()} Voofacil. Todos os direitos reservados.
             </p>
           </div>
 
           <nav className="flex flex-wrap md:flex-col gap-4 md:gap-3">
             {[
-              { label: "Buscar voos", href: "#busca" },
-              { label: "Milhas", href: "#milhas" },
-              { label: "Benefícios", href: "#beneficios" },
-              { label: "Como funciona", href: "#como-funciona" },
-              { label: "Transparência", href: "#transparencia" },
-              { label: "FAQ", href: "#faq" },
+              { label: "Buscar voos", href: "/#busca" },
+              { label: "Hotéis", href: "/hoteis" },
+              { label: "Milhas", href: "/#milhas" },
+              { label: "Benefícios", href: "/#beneficios" },
+              { label: "Como funciona", href: "/#como-funciona" },
+              { label: "Transparência", href: "/#transparencia" },
+              { label: "FAQ", href: "/#faq" },
             ].map((link) => (
               <a
                 key={link.href}
@@ -52,14 +53,14 @@ export function LandingFooter() {
               <Globe className="w-5 h-5" />
             </a>
             <a
-              href="#faq"
+              href="/#faq"
               aria-label="Dúvidas frequentes"
               className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center opacity-70 hover:opacity-100 hover:bg-white/10 transition-all"
             >
               <Mail className="w-5 h-5" />
             </a>
             <a
-              href="#transparencia"
+              href="/#transparencia"
               aria-label="Transparência"
               className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center opacity-70 hover:opacity-100 hover:bg-white/10 transition-all"
             >
