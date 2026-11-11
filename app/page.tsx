@@ -8,6 +8,7 @@ import { LandingHero } from "@/components/landing/hero";
 import { LandingSearchSection } from "@/components/landing/search-section";
 import { LandingResultsSection } from "@/components/landing/results-section";
 import { LandingFooter } from "@/components/landing/footer";
+import { MilhasSection } from "@/components/landing/miles-section";
 import {
   BeneficiosSection,
   ComoFuncionaSection,
@@ -189,6 +190,13 @@ export default function Home() {
         />
       )}
 
+      <div className="horizon-line" />
+      <MilhasSection
+        cashPrice={(() => {
+          const prices = flights.map((f) => parseFloat(f.price.total)).filter((p) => Number.isFinite(p) && p > 0);
+          return prices.length > 0 ? Math.min(...prices) : undefined;
+        })()}
+      />
       <div className="horizon-line" />
       <BeneficiosSection />
       <div className="horizon-line" />

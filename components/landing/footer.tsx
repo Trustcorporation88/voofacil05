@@ -27,6 +27,7 @@ export function LandingFooter() {
           <nav className="flex flex-wrap md:flex-col gap-4 md:gap-3">
             {[
               { label: "Buscar voos", href: "#busca" },
+              { label: "Milhas", href: "#milhas" },
               { label: "Benefícios", href: "#beneficios" },
               { label: "Como funciona", href: "#como-funciona" },
               { label: "Transparência", href: "#transparencia" },

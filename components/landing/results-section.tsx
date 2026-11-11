@@ -14,13 +14,14 @@ import {
   CheckCircle2,
   Clock3,
   Ban,
+  Calculator,
+  ChevronDown,
 } from 'lucide-react';
 import type { Flight, SearchParams, ProviderHealth } from '@/lib/types';
 import { FlightDetailsModal } from '@/components/flight-details-modal';
 import { FlexDates } from '@/components/flex-dates';
 import { PriceCalendar } from '@/components/price-calendar';
 import { AIRecommend } from '@/components/ai-recommend';
-import { MilesCalculator } from '@/components/miles-calculator';
 
 interface ResultsSectionProps {
   flights: Flight[];
@@ -228,7 +229,18 @@ export function LandingResultsSection({
           </label>
         </div>
 
-        <MilesCalculator cashPrice={Number.isFinite(lowestPrice) ? lowestPrice : undefined} />
+        <a
+          href="#milhas"
+          className="flex items-center justify-between gap-2 p-4 bg-white border border-brand-gray-300/50 rounded-xl hover:border-brand-charcoal transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <Calculator className="w-4 h-4 text-brand-gray-600" />
+            <span className="text-xs font-bold text-brand-gray-600 uppercase tracking-widest">
+              Dinheiro ou milhas? Compare
+            </span>
+          </span>
+          <ChevronDown className="w-4 h-4 text-brand-gray-600" />
+        </a>
 
         {/* Filters */}
         <div className="p-4 bg-white border border-brand-gray-300/50 rounded-xl">
