@@ -17,7 +17,7 @@
   "monochromeIconUrl": "https://www.voofacil.online/icon-monochrome.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "C:\\VOOFACIL05\\nextjs_space\\twa\\android.keystore",
+    "path": "C:\\voofacil05\\twa\\android.keystore",
     "alias": "android"
   },
   "appVersionName": "2",
